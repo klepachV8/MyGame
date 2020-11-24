@@ -6,6 +6,8 @@ using namespace std;
 const int X = 10;
 const int Y = 8;
 
+
+
 struct Point {
 	int x;
 	int y;
@@ -16,7 +18,10 @@ struct Player {
 	short team;
 	void(*movement)(Point);
 };
-
+struct Data {
+	Point * position;
+	Player * gamer;
+};
 Player *** field;
 
 
@@ -62,12 +67,12 @@ void initPlayers() {
 	field[0][4] = new Player();
 	field[0][4]->show = 'o';
 	field[0][4]->team= -1;
-	field[0][4]->movement = moveHunter;
+	field[0][4]->movement = moveDefender;
 
 	field[1][5] = new Player();
 	field[1][5]->show = '0';
 	field[1][5]->team = -1;
-	field[1][5]->movement = moveDefender;
+	field[1][5]->movement = moveHunter;
 
 	field[7][6] = new Player();
 	field[7][6]->show = '#';
@@ -128,6 +133,8 @@ void show() {
 }
 
 void moveAllPlayers() {
+	Data * data = new Data[X*Y];
+	int count = 0;
 	for (size_t i = 0; i < X; i++)
 	{
 		for (size_t j = 0; j < Y; j++)
@@ -137,14 +144,21 @@ void moveAllPlayers() {
 				Point * p = new Point();
 				p->x = i;
 				p->y = j;
-				field[i][j]->movement(*p);
-				//moveHunter(*p);
-				delete p;
-				return;//TODO: fix double movement
+
+				data[count].position = p;
+				data[count++].gamer = field[i][j];
 			}
 		}
 		cout << endl;
 	}
+
+	for (int i = 0; i < count; i++)
+	{
+		data[i].gamer->movement(*data[i].position);
+	}
+
+	//field[i][j]->movement(*p);
+
 }
 
 void main() {
