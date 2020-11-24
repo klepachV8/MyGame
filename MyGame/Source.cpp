@@ -6,15 +6,17 @@ using namespace std;
 const int X = 10;
 const int Y = 8;
 
-struct Player {
-	char show;
-	short team;
-
-};
 struct Point {
 	int x;
 	int y;
 };
+
+struct Player {
+	char show;
+	short team;
+	void(*movement)(Point);
+};
+
 Player *** field;
 
 
@@ -58,24 +60,30 @@ void moveDefender(Point curentPosition) {
 
 void initPlayers() {
 	field[0][4] = new Player();
-	field[0][4]->show = '0';
+	field[0][4]->show = 'o';
 	field[0][4]->team= -1;
-
-	field[7][6] = new Player();
-	field[7][6]->show = '$';
-	field[7][6]->team = 1;
+	field[0][4]->movement = moveHunter;
 
 	field[1][5] = new Player();
 	field[1][5]->show = '0';
 	field[1][5]->team = -1;
+	field[1][5]->movement = moveDefender;
+
+	field[7][6] = new Player();
+	field[7][6]->show = '#';
+	field[7][6]->team = 1;
+	field[7][6]->movement = moveHunter;
 
 	field[8][6] = new Player();
 	field[8][6]->show = '$';
 	field[8][6]->team = 1;
+	field[8][6]->movement = moveDefender;
 
 	field[X/2][Y/2] = new Player();
 	field[X/2][Y/2]->show = 'B';
 	field[X/2][Y/2]->team = 0;
+	field[X / 2][Y / 2]->movement = NULL;
+
 }
 
 void constructor() {
@@ -124,9 +132,15 @@ void moveAllPlayers() {
 	{
 		for (size_t j = 0; j < Y; j++)
 		{
-			if (field[i][j] != NULL)
+			if (field[i][j] != NULL &&  field[i][j]->team != 0)
 			{
-				//field[i][j]->;
+				Point * p = new Point();
+				p->x = i;
+				p->y = j;
+				field[i][j]->movement(*p);
+				//moveHunter(*p);
+				delete p;
+				return;//TODO: fix double movement
 			}
 		}
 		cout << endl;
@@ -135,6 +149,9 @@ void moveAllPlayers() {
 
 void main() {
 	constructor();
+	show();
+	cout << "------------\n";
+	moveAllPlayers();
 	show();
 	destructor();
 	system("pause");
