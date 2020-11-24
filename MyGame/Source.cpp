@@ -1,5 +1,6 @@
 #include <iostream>
 #include <windows.h>
+#include "Source.h"
 using namespace std;
 
 const int X = 10;
@@ -10,8 +11,72 @@ struct Player {
 	short team;
 
 };
+struct Point {
+	int x;
+	int y;
+};
 Player *** field;
 
+
+Point * findBall() {
+	for (size_t i = 0; i < X; i++)
+	{
+		for (size_t j = 0; j < Y; j++)
+		{
+			if (field[i][j] != NULL && field[i][j]->team == 0)
+			{
+				auto p = new Point();
+				p->x = i;
+				p->y = j;
+				return p;
+			}
+		}
+	}
+}
+
+void moveHunter(Point curentPosition) {
+
+	Point * ball = findBall();
+	if (abs(curentPosition.x - (long)ball->x) >= abs(curentPosition.y - (long)ball->y))
+	{
+		auto newPos = curentPosition.x > ball->x ? curentPosition.x -1 : curentPosition.x +1;
+		swap(field[curentPosition.x][curentPosition.y],
+			field[newPos][curentPosition.y]);
+	}
+	else
+	{
+		auto newPos = curentPosition.y > ball->y ? curentPosition.y - 1 : curentPosition.y + 1;
+		swap(field[curentPosition.x][curentPosition.y],
+			field[curentPosition.x][newPos]);
+	}
+			
+}
+
+void moveDefender(Point curentPosition) {
+
+}
+
+void initPlayers() {
+	field[0][4] = new Player();
+	field[0][4]->show = '0';
+	field[0][4]->team= -1;
+
+	field[7][6] = new Player();
+	field[7][6]->show = '$';
+	field[7][6]->team = 1;
+
+	field[1][5] = new Player();
+	field[1][5]->show = '0';
+	field[1][5]->team = -1;
+
+	field[8][6] = new Player();
+	field[8][6]->show = '$';
+	field[8][6]->team = 1;
+
+	field[X/2][Y/2] = new Player();
+	field[X/2][Y/2]->show = 'B';
+	field[X/2][Y/2]->team = 0;
+}
 
 void constructor() {
 	field = new Player**[X];
@@ -25,6 +90,7 @@ void constructor() {
 			field[i][j] = NULL;
 		}
 	}
+	initPlayers();
 }
 
 void destructor() {
@@ -35,8 +101,41 @@ void destructor() {
 	delete field;
 }
 
-void main() {
-	cout << "Hello World"<<endl;
+void show() {
+	for (size_t i = 0; i < X; i++)
+	{
+		for (size_t j = 0; j < Y; j++)
+		{
+			if (field[i][j] == NULL)
+			{
+				cout << " ";
+			}
+			else
+			{
+				cout << field[i][j]->show;
+			}
+		}
+		cout << endl;
+	}
+}
 
+void moveAllPlayers() {
+	for (size_t i = 0; i < X; i++)
+	{
+		for (size_t j = 0; j < Y; j++)
+		{
+			if (field[i][j] != NULL)
+			{
+				//field[i][j]->;
+			}
+		}
+		cout << endl;
+	}
+}
+
+void main() {
+	constructor();
+	show();
+	destructor();
 	system("pause");
 }
